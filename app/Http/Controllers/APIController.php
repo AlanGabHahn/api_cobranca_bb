@@ -159,7 +159,18 @@ class APIController extends Controller
     }
 
     public function consultar(){
-        dd('teste api');
+        $id = '00031285579999990005';
+        try {
+            $guzzle = new Client([
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->token(),
+                    'Content-Type' => 'application/json',
+                ],
+                'verify' => false
+            ]);
+        } catch (ClientException $e) {
+            echo $e->getMessage();
+        }
     }
 
     public function baixar(){
