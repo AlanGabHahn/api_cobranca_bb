@@ -191,10 +191,88 @@ class APIController extends Controller
     }
 
     public function baixar(){
-        dd('teste api');
+        $id = '00031285579999990005';
+
+        try {
+
+            $guzzle = new Client([
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->token(),
+                    'Content-Type' => 'application/json',
+                ],
+                'verify' => false
+            ]);
+            //Requisição
+            $response = $guzzle->request('POST', 'https://api.hm.bb.com.br/cobrancas/v1/boletos/'.
+                $id . '/baixar?gw-dev-app-key=' . config('apiCobranca.gw_dev_app_key'),
+                [
+                    'body' => json_encode([
+                    'numeroConvenio' => 3128557
+                ])
+            ]
+            );
+            //Recuperar o corpo da resposta da requisição
+            $body = $response->getBody();
+
+            //Acessar os dados da resposta - JSON
+            $contents = $body->getContents();
+
+            //Converter o JSON em array associativo  PHP
+            $boleto = json_decode($contents);
+
+            dd($boleto);
+
+        } catch (GuzzleException $e) {
+            echo $e->getMessage();
+        }
     }
 
     public function atualizar(){
-        dd('teste api');
+        $id = '00031285579999990005';
+
+        //Atributos que serão alterados
+        $dados = array(
+            'numeroConvenio' => 3128557,
+            'indicadorNovaDataVencimento' => 'S',
+            'alteracaoData' => array(
+                'novaDataVencimento' => '15.02.2021'
+            )
+        );
+
+        //Converte array em json
+         $dados = json_encode($dados);
+
+
+        try {
+            $guzzle = new Client([
+                'headers' => [
+                    'Authorization' => 'Bearer ' . $this->token(),
+                    'Content-Type' => 'application/json'
+                ],
+                'verify' => false,
+
+            ]);
+
+            //Requisição
+            $response = $guzzle->request('PATCH', 'https://api.hm.bb.com.br/cobrancas/v1/boletos/'.$id.'?gw-dev-app-key='. config('apiCobranca.gw_dev_app_key'),
+                [
+                    'body' => $dados
+                ]
+            );
+
+            //Recuperar o corpo da resposta da requisição
+            $body = $response->getBody();
+
+            //Acessar os dados da resposta - JSON
+            $contents = $body->getContents();
+
+            //Converter o JSON em array associativo PHP
+            $boleto = json_decode($contents);
+
+            dd($boleto);
+
+        } catch (GuzzleException $e) {
+            echo $e->getMessage();
+        }
     }
 }
