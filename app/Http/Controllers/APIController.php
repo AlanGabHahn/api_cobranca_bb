@@ -151,7 +151,7 @@ class APIController extends Controller
             //Coverter JSON em array associativo PHP
             $boletos = json_decode($contents);
 
-            dd($boletos);
+            // dd($boletos);
 
         } catch (GuzzleException $e) {
             echo $e->getMessage();
@@ -168,6 +168,23 @@ class APIController extends Controller
                 ],
                 'verify' => false
             ]);
+            //Requisição
+            $response = $guzzle->request('GET', 'https://api.hm.bb.com.br/cobrancas/v1/boletos/'.
+                $id .
+                '?gw-dev-app-key=' . config('apiCobranca.gw_dev_app_key') .
+                '&numeroConvenio=' . '3128557'
+            );
+            //Recuperar o corpo da resposta da requisição
+            $body = $response->getBody();
+
+            //Acessar os dados da resposta -JSON
+            $contents = $body->getContents();
+
+            //Converter o JSON em array associativo PHP
+            $boleto = json_decode($contents);
+
+            dd($boleto);
+
         } catch (ClientException $e) {
             echo $e->getMessage();
         }
